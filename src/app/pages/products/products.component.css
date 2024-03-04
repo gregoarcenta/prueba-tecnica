@@ -1,0 +1,14 @@
+.products__header{
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+}
+
+.products--container{
+  background-color: #fff;
+  padding: 1rem;
+}
+.error__msg{
+  color: rgb(188, 29, 29);
+  text-align: center;
+}

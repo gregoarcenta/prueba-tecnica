@@ -1,0 +1,11 @@
+.header {
+  padding: 1rem 0;
+  background-color: white;
+  display: grid;
+  place-items: center;
+  img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+  }
+}

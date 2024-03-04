@@ -1,0 +1,14 @@
+@if (products$ | async; as productsData) {
+<header class="products__header">
+  <input type="text" placeholder="Search..." [formControl]="searchControl">
+  <button [routerLink]="['/add-product']">Agregar</button>
+</header>
+<section class="products--container">
+  <app-table [products]="productsData" />
+</section>
+}@else if(errorMessage().length) {
+<h1 class="error__msg">{{errorMessage()}}</h1>
+}@else {
+<app-skeleton-table></app-skeleton-table>
+}
+
