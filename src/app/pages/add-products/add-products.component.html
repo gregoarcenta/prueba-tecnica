@@ -8,32 +8,55 @@
     <!--id-->
     <div class="form__input form__input--mleft">
       <label for="id">ID</label>
-      <input type="text" placeholder="ID" formControlName="id" class="form-control" id="id" />
+      <input
+        type="text"
+        placeholder="ID"
+        formControlName="id"
+        class="form-control"
+        id="id"
+      />
       @if (validInput('id')) {
-      <small>{{getErrorID()}}</small>
+      <small>{{ getErrorID() }}</small>
       }
     </div>
     <!--name-->
     <div class="form__input form__input--mright">
       <label for="name">Nombre</label>
-      <input type="text" placeholder="Nombre" formControlName="name" class="form-control" id="name" />
+      <input
+        type="text"
+        placeholder="Nombre"
+        formControlName="name"
+        class="form-control"
+        id="name"
+      />
       @if (validInput('name')) {
-      <small>{{getErrorName()}}</small>
+      <small>{{ getErrorName() }}</small>
       }
     </div>
     <!--description-->
     <div class="form__input form__input--mleft">
       <label for="description">Descripcion</label>
-      <input type="text" placeholder="Descripcion" formControlName="description" class="form-control"
-        id="description" />
+      <input
+        type="text"
+        placeholder="Descripcion"
+        formControlName="description"
+        class="form-control"
+        id="description"
+      />
       @if (validInput('description')) {
-      <small>{{getErrorDescription()}}</small>
+      <small>{{ getErrorDescription() }}</small>
       }
     </div>
     <!--logo-->
     <div class="form__input form__input--mright">
       <label for="logo">Logo</label>
-      <input type="text" placeholder="Logo" formControlName="logo" class="form-control" id="logo" />
+      <input
+        type="text"
+        placeholder="Logo"
+        formControlName="logo"
+        class="form-control"
+        id="logo"
+      />
       @if (validInput('logo')) {
       <small>El logo es requerido</small>
       }
@@ -41,30 +64,37 @@
     <!--date_release-->
     <div class="form__input form__input--mleft">
       <label for="date_release">Fecha Liberación</label>
-      <input type="date" placeholder="Fecha Liberación" formControlName="date_release" class="form-control"
-        id="date_release" />
+      <input
+        type="date"
+        placeholder="Fecha Liberación"
+        formControlName="date_release"
+        class="form-control"
+        id="date_release"
+      />
       @if (validInput('date_release')) {
-      <small>{{getErrorDate()}}</small>
+      <small>{{ getErrorDate() }}</small>
       }
     </div>
     <!--date_revision-->
     <div class="form__input form__input--mright">
       <label for="date_revision">Fecha Revisión</label>
-      <input type="date" placeholder="Fecha Revisión" formControlName="date_revision" class="form-control"
-        id="date_revision" />
+      <input
+        type="date"
+        placeholder="Fecha Revisión"
+        formControlName="date_revision"
+        class="form-control"
+        id="date_revision"
+      />
       @if (validInput('date_revision')) {
       <small class="form-text text-danger">error</small>
       }
     </div>
     <!--boton submit-->
     <div class="form__buttons">
-      <button class="btn-secondary" (click)="formReset()">
-        Reiniciar
-      </button>
+      <button class="btn-secondary" (click)="formReset()">Reiniciar</button>
       <button type="submit" (click)="formSubmit()">
-        Enviar
+        {{ productId ? "Actualizar" : "Enviar" }}
       </button>
     </div>
-
   </form>
 </div>

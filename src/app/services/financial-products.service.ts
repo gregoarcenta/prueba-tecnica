@@ -1,10 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment.development';
 import {
   BehaviorSubject,
+  EMPTY,
   Observable,
   catchError,
+  map,
+  switchMap,
   tap,
   throwError,
 } from 'rxjs';
@@ -14,17 +17,24 @@ import { IProduct } from '../interfaces/product';
   providedIn: 'root',
 })
 export class FinancialProductsService {
-  products$ = new BehaviorSubject<IProduct[]>([]);
+  public products$ = new BehaviorSubject<IProduct[]>([]);
   private http = inject(HttpClient);
   private url = environment.url;
-
-  constructor() {}
 
   getProducts(): Observable<IProduct[]> {
     return this.http.get<IProduct[]>(`${this.url}/bp/products`).pipe(
       tap((products) => this.products$.next(products)),
-      // switchMap((e) => throwError(() => 'Hubo un error')),
-      catchError((err) => throwError(() => 'Lo sentimos, hubo un error. Vuelva a cargar la página')),
+      catchError((err) =>
+        throwError(
+          () => 'Lo sentimos, hubo un error. Vuelva a cargar la página'
+        )
+      )
+    );
+  }
+
+  getProductById(id: string): Observable<IProduct | undefined> {
+    return this.getProducts().pipe(
+      map((products) => products.find((product) => product.id === id))
     );
   }
 
@@ -34,16 +44,20 @@ export class FinancialProductsService {
       params,
     });
   }
+
   addProduct(product: IProduct): Observable<IProduct> {
     return this.http.post<IProduct>(`${this.url}/bp/products`, product);
   }
+
   updateProduct(product: IProduct): Observable<IProduct> {
     return this.http.put<IProduct>(`${this.url}/bp/products`, product);
   }
-  deleteProduct(id: string): Observable<any> {
+
+  deleteProduct(id: string): Observable<string> {
     const params = new HttpParams().set('id', id);
     return this.http.delete<any>(`${this.url}/bp/products`, {
       params,
+      responseType: 'text' as 'json',
     });
   }
 }

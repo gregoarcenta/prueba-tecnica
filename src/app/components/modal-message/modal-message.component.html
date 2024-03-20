@@ -1,0 +1,28 @@
+<div class="modal">
+  <div class="moddal__img">
+    @switch (modalMessageService.type()) { @case ("error") {
+    <img src="assets/error.png" />
+    } @case ("success") {
+    <img src="assets/success.png" />
+    } }
+  </div>
+
+  <header>
+    <h2>{{ modalMessageService.title() }}</h2>
+  </header>
+
+  <p>{{ modalMessageService.detail() }}</p>
+
+  <footer>
+    @if (!modalMessageService.type()) {
+    <button class="btn-secondary mr-2" (click)="modalMessageService.cancel()">
+      Cancelar
+    </button>
+    <button (click)="modalMessageService.confirm()">Confirmar</button>
+    }@else {
+    <button class="btn-secondary" (click)="modalMessageService.cancel()">
+      Cerrar
+    </button>
+    }
+  </footer>
+</div>

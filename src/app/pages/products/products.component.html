@@ -3,7 +3,7 @@
   <input type="text" placeholder="Search..." [formControl]="searchControl">
   <button [routerLink]="['/add-product']">Agregar</button>
 </header>
-<section class="products--container">
+<section class="products__container">
   <app-table [products]="productsData" />
 </section>
 }@else if(errorMessage().length) {

@@ -1,9 +1,29 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import {
+  FormControl,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FinancialProductsService } from '../../services/financial-products.service';
-import { dateValidate } from '../../shared/validations/custom-validators';
-import { VerifyIdValidator } from '../../shared/validations/verify-id.service';
+import {
+  dateValidator,
+  verifyIdValidator,
+} from '../../shared/validations/custom-validators';
+import { IProduct } from '../../interfaces/product';
+import { EMPTY, map, pipe, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ModalMessageService } from '../../services/modal-message.service';
+
+interface IProductForm {
+  id: FormControl<string>;
+  name: FormControl<string>;
+  description: FormControl<string>;
+  logo: FormControl<string>;
+  date_release: FormControl<string>;
+  date_revision: FormControl<string>;
+}
 
 @Component({
   selector: 'app-add-products',
@@ -14,47 +34,58 @@ import { VerifyIdValidator } from '../../shared/validations/verify-id.service';
 })
 export default class AddProductsComponent implements OnInit {
   // services
-  financialProductService = inject(FinancialProductsService);
-  verifyIdValidator = inject(VerifyIdValidator);
-  fb = inject(FormBuilder);
+  private financialProductService = inject(FinancialProductsService);
+  private modalMessageService = inject(ModalMessageService);
+  private activatedRoute = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
+  private nnfb = inject(NonNullableFormBuilder);
 
   //FormGoup
-  productForm = this.fb.nonNullable.group({
-    id: this.fb.nonNullable.control<string>(
+  public productForm = this.nnfb.group<IProductForm>({
+    id: this.nnfb.control(
       '',
       [Validators.required, Validators.minLength(5), Validators.maxLength(10)],
-      [this.verifyIdValidator.validate.bind(this.verifyIdValidator)]
+      [verifyIdValidator(this.financialProductService)]
     ),
-    name: this.fb.nonNullable.control<string>('', [
+    name: this.nnfb.control('', [
       Validators.required,
       Validators.minLength(5),
       Validators.maxLength(100),
     ]),
-    description: this.fb.nonNullable.control<string>('', [
+    description: this.nnfb.control('', [
       Validators.required,
       Validators.minLength(10),
       Validators.maxLength(200),
     ]),
-    logo: this.fb.nonNullable.control<string>('', [Validators.required]),
-    date_release: this.fb.nonNullable.control<string>('', [
+    logo: this.nnfb.control('', [Validators.required]),
+    date_release: this.nnfb.control('', [Validators.required, dateValidator()]),
+    date_revision: this.nnfb.control({ value: '', disabled: true }, [
       Validators.required,
-      dateValidate(),
     ]),
-    date_revision: this.fb.nonNullable.control<string>(
-      { value: '', disabled: true },
-      [Validators.required]
-    ),
   });
 
+  public productId: string | null = null;
+  private product: IProduct | null = null;
+
+  constructor() {
+    this.productId = this.activatedRoute.snapshot.paramMap.get('id');
+
+    if (this.productId) this.getPorductById(this.productId);
+  }
+
   ngOnInit(): void {
-    this.productForm.get('date_release')?.valueChanges.subscribe((date) => {
-      if (!date) return;
-      const initDate = new Date(date);
-      const newDate = new Date(date);
-      newDate.setFullYear(initDate.getFullYear() + 1);
-      const newDateString = newDate.toISOString().slice(0, 10);
-      this.productForm.get('date_revision')?.setValue(newDateString);
-    });
+    this.productForm
+      .get('date_release')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((date) => {
+        if (!date) return;
+        const initDate = new Date(date);
+        const newDate = new Date(date);
+        newDate.setFullYear(initDate.getFullYear() + 1);
+        const newDateString = newDate.toISOString().slice(0, 10);
+        this.productForm.get('date_revision')?.setValue(newDateString);
+      });
   }
 
   validInput(name: string) {
@@ -63,20 +94,83 @@ export default class AddProductsComponent implements OnInit {
     );
   }
 
+  getPorductById(productId: string) {
+    this.financialProductService
+      .getProductById(productId)
+      .pipe(takeUntilDestroyed())
+      .subscribe((product) => {
+        if (product) {
+          this.product = product;
+          this.fillFormPorduct(product);
+
+          const controlId = this.productForm.controls['id'];
+          controlId.disable();
+          controlId.clearAsyncValidators();
+          controlId.updateValueAndValidity();
+          return;
+        }
+
+        this.router.navigateByUrl('/');
+      });
+  }
+
+  fillFormPorduct(product: IProduct) {
+    this.productForm.patchValue({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      logo: product.logo,
+      date_release: product.date_release.toLocaleString().slice(0, 10),
+      date_revision: product.date_revision.toLocaleString().slice(0, 10),
+    });
+  }
+
+  formReset() {
+    if (this.product) return this.fillFormPorduct(this.product);
+
+    this.productForm.reset();
+  }
+
   formSubmit() {
     if (this.productForm.invalid) return this.productForm.markAllAsTouched();
 
+    if (this.product) return this.updateProduct();
+
+    return this.createProduct();
+  }
+
+  updateProduct() {
     this.financialProductService
-      .addProduct(this.productForm.getRawValue())
+      .updateProduct(this.productForm.getRawValue())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.formReset();
+          this.modalMessageService.alert({
+            title: 'Listo',
+            detail: `Producto "${response.name}" actualizado correctamente`,
+            type: 'success',
+          });
+          (this.product = response)
         },
-        error: (err) => console.warn(err),
+        error: (err) => console.error(err),
       });
   }
-  formReset() {
-    this.productForm.reset();
+
+  createProduct() {
+    this.financialProductService
+      .addProduct(this.productForm.getRawValue())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.modalMessageService.alert({
+            title: 'Listo',
+            detail: `Producto "${response.name}" creado correctamente`,
+            type: 'success',
+          });
+          this.formReset();
+        },
+        error: (err) => console.error(err),
+      });
   }
 
   /**

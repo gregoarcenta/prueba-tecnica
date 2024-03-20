@@ -10,7 +10,8 @@ export const authorIdInterceptor: HttpInterceptorFn = (req, next) => {
     spinner.active.set(true);
   }
 
-  const headers = new HttpHeaders().set('authorId', '333');
+  const headers =req.headers.set('authorId', '333');
+
   const request = req.clone({ headers });
 
   return next(request).pipe(

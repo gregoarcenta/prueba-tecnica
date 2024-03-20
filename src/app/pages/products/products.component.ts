@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   inject,
   signal,
@@ -9,8 +10,10 @@ import {
   BehaviorSubject,
   debounceTime,
   distinctUntilChanged,
+  filter,
   map,
   switchMap,
+  tap,
 } from 'rxjs';
 import { FinancialProductsService } from '../../services/financial-products.service';
 import { AsyncPipe, JsonPipe } from '@angular/common';
@@ -19,6 +22,7 @@ import { TableComponent } from '../../components/table/table.component';
 import { IProduct } from '../../interfaces/product';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { SkeletonTableComponent } from '../../components/skeleton-table/skeleton-table.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-products',
@@ -42,12 +46,23 @@ export default class ProductsComponent implements OnInit {
 
   //services
   financialProducts = inject(FinancialProductsService);
+  destroyRef = inject(DestroyRef);
 
   constructor() {
-    this.financialProducts.getProducts().subscribe({
-      next: (data) => this.products$.next(data),
-      error: (err) => this.errorMessage.set(err),
-    });
+    this.financialProducts.products$
+      .pipe(
+        filter((products) => products.length > 0),
+        takeUntilDestroyed()
+      )
+      .subscribe((products) => this.products$.next(products));
+
+    this.financialProducts
+      .getProducts()
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (data) => this.products$.next(data),
+        error: (err) => this.errorMessage.set(err),
+      });
   }
   ngOnInit(): void {
     this.setupSearch();
@@ -71,11 +86,11 @@ export default class ProductsComponent implements OnInit {
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((value) => this.searchProduct(value))
+        switchMap((value) => this.searchProduct(value)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((products) => {
         this.products$.next(products);
-        // console.log('result: ', products);
       });
   }
 }

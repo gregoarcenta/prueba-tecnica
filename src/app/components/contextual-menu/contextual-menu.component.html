@@ -1,0 +1,14 @@
+<div class="contextual" (click)="showOrHideMenu()">
+  <div class="contextual__icon">
+    <div class="contextual__icon--item"></div>
+    <div class="contextual__icon--item"></div>
+    <div class="contextual__icon--item"></div>
+  </div>
+
+  <div class="contextual__menu" #menu>
+    <ul>
+      <li (click)="onUpdateEmit.emit()">Actualizar</li>
+      <li (click)="ondeleteEmit.emit()">Eliminar</li>
+    </ul>
+  </div>
+</div>

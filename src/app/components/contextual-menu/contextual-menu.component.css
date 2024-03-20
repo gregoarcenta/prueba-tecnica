@@ -1,0 +1,55 @@
+.contextual__icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  height: 2.6rem;
+  width: 2.6rem;
+  border-radius: 50%;
+  transition: all .3s ease;
+
+  .contextual__icon--item {
+    display: inline;
+    height: 5px;
+    width: 5px;
+    background-color: #818181;
+    margin: 2px;
+    border-radius: 50%;
+  }
+}
+
+.contextual__icon:hover {
+  background-color: #fafafa;
+}
+
+.contextual__menu {
+  position: absolute;
+  right: 0%;
+  border-radius: var(--border-radius);
+  z-index: 9999;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  visibility: hidden;
+  opacity: 0;
+}
+.contextual__menu.active {
+  visibility: visible;
+  opacity: 1;
+  transition: all .3s ease;
+}
+
+.contextual__menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0
+}
+
+.contextual__menu ul li {
+  cursor: pointer;
+  padding: 1rem 3rem;
+}
+
+.contextual__menu ul li:hover {
+  background-color: #fafafa;
+}

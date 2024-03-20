@@ -1,11 +1,9 @@
-import {
-  AbstractControl,
-  AsyncValidatorFn,
-  ValidationErrors,
-  ValidatorFn,
-} from '@angular/forms';
+import { inject } from "@angular/core";
+import { AbstractControl, AsyncValidatorFn, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { Observable, catchError, debounceTime, map, of } from "rxjs";
+import { FinancialProductsService } from "../../services/financial-products.service";
 
-export const dateValidate = (): ValidatorFn => {
+export const dateValidator = (): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
     const date: string = control.value;
 
@@ -29,3 +27,13 @@ export const dateValidate = (): ValidatorFn => {
     return null;
   };
 };
+
+export const verifyIdValidator = (financialProductsService:FinancialProductsService): AsyncValidatorFn => {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    return financialProductsService.verifyProductByID(control.value).pipe(
+      debounceTime(1000),
+      map((exists) => (exists ? { exists_id: true } : null)),
+      catchError(() => of(null))
+    );
+  };
+}

@@ -5,7 +5,6 @@
   --border-color: #e6e6e6;
   --border-radius: 6px;
 
-  --input-padding: .5rem;
   --input-focus-border-color: #e0e0e0;
 
   --primary-color: #ffdd00;
@@ -35,7 +34,7 @@ p, h1, h2, h3, h4 h5 {
 
 /***** Input section *****/
 input, select {
-  padding: var(--input-padding);
+  padding: .8rem .5rem;
   border-radius: var(--border-radius);
   border: 2px solid var(--border-color);
 }
@@ -98,7 +97,7 @@ table {
 }
 
 thead {
-  background-color: #f1f3f4;
+  background-color: #f3f3f3;
 }
 
 th, td {

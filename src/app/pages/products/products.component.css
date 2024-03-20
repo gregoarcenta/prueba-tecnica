@@ -1,10 +1,12 @@
 .products__header{
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
   padding: 1rem 0;
+
 }
 
-.products--container{
+.products__container{
   background-color: #fff;
   padding: 1rem;
 }

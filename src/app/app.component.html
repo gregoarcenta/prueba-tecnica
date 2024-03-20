@@ -1,5 +1,8 @@
 @if (spinner.active()) {
 <app-loader />
+
+} @if (modalMessageService.isActive()) {
+<app-modal-message />
 }
 
 <app-header />

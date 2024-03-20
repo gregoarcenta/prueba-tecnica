@@ -4,19 +4,26 @@
       <tr>
         <th>Logo</th>
         <th>Nombre del producto</th>
-        <th>Descripción</th>
-        <th>Fecha de liberación</th>
-        <th>Fecha de reestructuración</th>
+        <th>Descripción <span></span></th>
+        <th>Fecha de liberación <span></span></th>
+        <th>Fecha de reestructuración <span></span></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
       @for (product of productsData(); track product.id) {
       <tr>
-        <td>{{product.id}}</td>
-        <td>{{ product.name}}</td>
-        <td>{{ product.description}}</td>
-        <td>{{ product.date_release | date:'dd/MM/YYYY':'UTC'}}</td>
-        <td>{{ product.date_revision | date:'dd/MM/YYYY':'UTC'}}</td>
+        <td><img [src]="product.logo" [alt]="product.name" (error)="handleImageError($event)" /></td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.date_release | date : "dd/MM/YYYY" : "UTC" }}</td>
+        <td>{{ product.date_revision | date : "dd/MM/YYYY" : "UTC" }}</td>
+        <td>
+          <app-contextual-menu
+            (onUpdateEmit)="onUpdateProduct(product.id)"
+            (ondeleteEmit)="onDeleteProduct(product)"
+          />
+        </td>
       </tr>
       }@empty {
       <div>No hay datos</div>
@@ -26,10 +33,18 @@
 </div>
 
 <footer class="table__footer">
-  <span> {{products().length}} Resultados </span>
+  <span> {{ products().length }} Resultados </span>
   <div class="footer__buttons">
-    <button class="footer__buttons--margin" [disabled]="page() === 1" (click)="previusPage()">Anterior</button>
-    <button [disabled]="page() === lastPage(limit())" (click)="nextPage()">Siguiente</button>
+    <button
+      class="footer__buttons--margin"
+      [disabled]="page() === 1"
+      (click)="previusPage()"
+    >
+      Anterior
+    </button>
+    <button [disabled]="page() === lastPage(limit())" (click)="nextPage()">
+      Siguiente
+    </button>
   </div>
   <select (change)="changeLimitPage(limitPage.value)" #limitPage>
     <option value="5">5</option>

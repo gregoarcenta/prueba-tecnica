@@ -1,0 +1,53 @@
+:host {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #00000084;
+  display: grid;
+  place-items: center;
+  z-index: 9998;
+}
+
+.modal {
+  background-color: white;
+  padding: 1.5rem 2rem;
+  border-radius: var(--border-radius);
+  z-index: 9999;
+  width: 30rem;
+
+  .moddal__img {
+    display: grid;
+    place-items: center;
+  }
+
+  img {
+    max-width: 6rem;
+    margin-bottom: 1rem;
+  }
+
+  h2{
+    text-align: center;
+  }
+
+  p {
+    margin: 1.4rem 0;
+  }
+
+  footer {
+    display: flex;
+
+    button {
+      padding: 1rem 4rem;
+      font-weight: 700;
+      flex-grow: 1;
+    }
+  }
+
+
+}
+
+.mr-2 {
+  margin-right: .8rem;
+}
