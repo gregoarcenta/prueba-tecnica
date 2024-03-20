@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import NotFoundPageComponent from './404.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('404Component', () => {
   let fixture: ComponentFixture<NotFoundPageComponent>;
@@ -8,7 +9,7 @@ describe('404Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NotFoundPageComponent],
+      imports: [NotFoundPageComponent, RouterTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NotFoundPageComponent);
@@ -23,7 +24,7 @@ describe('404Component', () => {
   });
 
   it('Debe de reenderizar "Pagina no encontrada"', () => {
-    const element = compiled.querySelector('div')
-    expect(element?.textContent).toBe("Página no encontrada");
+    const element = compiled.querySelector('p');
+    expect(element?.textContent).toBe('Página no encontrada');
   });
 });

@@ -86,12 +86,12 @@ describe('FinancialProductsService', () => {
   it('Debe de eliminar un producto', (done) => {
     const id = 'abc123'
     service.deleteProduct(id).subscribe((response) => {
-      expect(response).toEqual({});
+      expect(response).toEqual("");
       done();
     });
     const request = httpMock.expectOne(`${url}/bp/products?id=${id}`);
     expect(request.request.method).toEqual('DELETE');
-    request.flush({});
+    request.flush("");
     httpMock.verify();
   });
 });

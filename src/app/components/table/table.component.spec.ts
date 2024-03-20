@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TableComponent } from './table.component';
+import {
+  HttpClientTestingModule,
+} from '@angular/common/http/testing';
 
 const mockData = [
   {
@@ -27,7 +30,7 @@ describe('TableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableComponent],
+      imports: [TableComponent, HttpClientTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TableComponent);
